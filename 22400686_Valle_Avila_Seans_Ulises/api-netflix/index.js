@@ -1,15 +1,12 @@
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']); // Forzar uso de DNS de Google
 const express = require('express');
-const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3003;
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 // Middlewares
-app.use(cors()); // <-- IMPORTANTE: sin esto, el navegador bloquea las peticiones
-                  // del frontend (hosteado en otro dominio) por política CORS.
 app.use(express.json());
 app.use(morgan('dev'));
 
