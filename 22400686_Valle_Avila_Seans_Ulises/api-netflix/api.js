@@ -9,7 +9,7 @@
 //
 // Esto funciona igual en local: corre "npm start" y abre http://localhost:3003
 // (NO abras index.html con doble clic, ábrelo desde esa URL del servidor).
-const API_URL = "";
+const API_URL = "https://api-netflix-vert.vercel.app/";
 
 async function manejarRespuesta(respuesta, mensajeError) {
     let cuerpo = null;
