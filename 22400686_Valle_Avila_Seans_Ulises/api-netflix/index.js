@@ -1,10 +1,15 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']); // Forzar uso de DNS de Google
 const express = require('express');
+const cors = require('cors');
 const app = express();
-const PORT = 3002;
+const PORT = process.env.PORT || 3003;
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 // Middlewares
+app.use(cors()); // <-- IMPORTANTE: sin esto, el navegador bloquea las peticiones
+                  // del frontend (hosteado en otro dominio) por política CORS.
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -52,7 +57,6 @@ const Serie = mongoose.model("Serie", serieSchema, "series");
 // ENDPOINTS DE PELÍCULAS (CRUD)
 // ==========================================
 
-// Obtener todas las películas
 app.get("/peliculas", async (req, res) => {
     try {
         const peliculas = await Pelicula.find();
@@ -62,7 +66,6 @@ app.get("/peliculas", async (req, res) => {
     }
 });
 
-// Obtener película por ID
 app.get("/peliculas/:id", async (req, res) => {
     try {
         const pelicula = await Pelicula.findById(req.params.id);
@@ -75,11 +78,10 @@ app.get("/peliculas/:id", async (req, res) => {
     }
 });
 
-// Crear una película
 app.post("/peliculas", async (req, res) => {
     try {
         const { titulo, genero, año, duracion, idioma, calificacion, nc } = req.body;
-        
+
         if (!titulo || !genero || !año || !duracion || !idioma || calificacion === undefined || !nc) {
             return res.status(400).json({ mensaje: "Faltan datos obligatorios de la película" });
         }
@@ -96,7 +98,6 @@ app.post("/peliculas", async (req, res) => {
     }
 });
 
-// Actualizar una película
 app.put("/peliculas/:id", async (req, res) => {
     try {
         const { titulo, genero, año, duracion, idioma, calificacion, nc } = req.body;
@@ -120,11 +121,10 @@ app.put("/peliculas/:id", async (req, res) => {
     }
 });
 
-// Eliminar una película
 app.delete("/peliculas/:id", async (req, res) => {
     try {
         const peliculaEliminada = await Pelicula.findByIdAndDelete(req.params.id);
-        
+
         if (!peliculaEliminada) {
             return res.status(404).json({ mensaje: "Película no encontrada" });
         }
@@ -142,7 +142,6 @@ app.delete("/peliculas/:id", async (req, res) => {
 // ENDPOINTS DE SERIES (CRUD)
 // ==========================================
 
-// Obtener todas las series
 app.get("/series", async (req, res) => {
     try {
         const series = await Serie.find();
@@ -152,7 +151,6 @@ app.get("/series", async (req, res) => {
     }
 });
 
-// Obtener serie por ID
 app.get("/series/:id", async (req, res) => {
     try {
         const serie = await Serie.findById(req.params.id);
@@ -165,7 +163,6 @@ app.get("/series/:id", async (req, res) => {
     }
 });
 
-// Crear una serie
 app.post("/series", async (req, res) => {
     try {
         const { titulo, genero, año, temporadas, episodios, idioma, calificacion, nc } = req.body;
@@ -186,7 +183,6 @@ app.post("/series", async (req, res) => {
     }
 });
 
-// Actualizar una serie
 app.put("/series/:id", async (req, res) => {
     try {
         const { titulo, genero, año, temporadas, episodios, idioma, calificacion, nc } = req.body;
@@ -210,7 +206,6 @@ app.put("/series/:id", async (req, res) => {
     }
 });
 
-// Eliminar una serie
 app.delete("/series/:id", async (req, res) => {
     try {
         const serieEliminada = await Serie.findByIdAndDelete(req.params.id);
@@ -239,3 +234,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log("Servidor iniciado en: http://localhost:" + PORT);
 });
+
+module.exports = app; // <-- útil si despliegas en Vercel como función serverless
