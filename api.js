@@ -1,10 +1,15 @@
 // ==========================================
 // CONFIGURACIÓN
 // ==========================================
-// Reemplaza esto con la URL real de tu API desplegada en Vercel,
-// por ejemplo: "https://tu-proyecto.vercel.app"
-// Para probar en local mientras desarrollas, usa: "http://localhost:3003"
-const API_URL = "URL_VERCEL";
+// Como esta página (index.html) y la API viven en el MISMO proyecto de Vercel,
+// las peticiones se hacen a la misma dirección desde la que se sirve la página.
+// Por eso API_URL queda vacío: fetch(`${API_URL}/peliculas`) termina siendo
+// simplemente fetch("/peliculas"), y el navegador nunca ve un origen distinto,
+// así que no hace falta configurar CORS.
+//
+// Esto funciona igual en local: corre "npm start" y abre http://localhost:3003
+// (NO abras index.html con doble clic, ábrelo desde esa URL del servidor).
+const API_URL = "";
 
 async function manejarRespuesta(respuesta, mensajeError) {
     let cuerpo = null;
