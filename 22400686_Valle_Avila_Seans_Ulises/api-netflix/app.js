@@ -23,7 +23,8 @@ const campoDuracion = document.querySelector(".campo-pelicula");
 const campoSerie = document.querySelector(".campo-serie");
 
 // ==========================================
-// PALETA DE POSTERS (gradientes fijos, look editorial de catálogo)
+// PALETA DE POSTERS (gradientes fijos, se usan como respaldo si la
+// portada no carga o no existe)
 // ==========================================
 const GRADIENTES = [
     "linear-gradient(150deg, #7a1620 0%, #2b0a10 100%)",
@@ -111,13 +112,16 @@ function tarjetaHTML(item) {
         ? `<span class="poster__badge">${item.duracion} min</span>`
         : `<span class="poster__badge">${item.temporadas} temp · ${item.episodios} ep</span>`;
 
+    // Fondo con la portada real; si la imagen no carga, se ve el gradiente de respaldo
+    const fondo = item.portada
+        ? `background-image: url('${item.portada}'), ${gradientePara(item.titulo)}; background-size: cover; background-position: center;`
+        : `background: ${gradientePara(item.titulo)};`;
+
     return `
-    <article class="poster" style="background:${gradientePara(item.titulo)}">
+    <article class="poster" style="${fondo}">
         <span class="poster__nc">${item.nc}</span>
-        <div class="poster__fondo">
-            <p class="poster__titulo">${item.titulo}</p>
-        </div>
         <div class="poster__overlay">
+            <p class="poster__titulo">${item.titulo}</p>
             <div class="poster__meta">
                 <span class="poster__badge">${item.genero}</span>
                 <span class="poster__badge">${item.año}</span>
@@ -182,6 +186,7 @@ function abrirModalEdicion(id) {
     actualizarCamposFormulario();
 
     document.getElementById("titulo").value = item.titulo;
+    document.getElementById("portada").value = item.portada || "";
     document.getElementById("genero").value = item.genero;
     document.getElementById("anio").value = item.año;
     document.getElementById("idioma").value = item.idioma;
@@ -229,6 +234,7 @@ formulario.addEventListener("submit", async (e) => {
 
     const datosBase = {
         titulo: document.getElementById("titulo").value.trim(),
+        portada: document.getElementById("portada").value.trim(),
         genero: document.getElementById("genero").value.trim(),
         año: Number(document.getElementById("anio").value),
         idioma: document.getElementById("idioma").value.trim(),
